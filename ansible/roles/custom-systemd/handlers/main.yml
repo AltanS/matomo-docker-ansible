@@ -1,0 +1,5 @@
+- name: restart docker-compose-app
+  ansible.builtin.systemd:
+    name: docker-compose-app
+    state: restarted
+    daemon_reload: yes

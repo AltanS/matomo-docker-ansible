@@ -1,0 +1,18 @@
+[Unit]
+Description=Docker Compose Application
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=ansibleadmin
+Group=docker
+Type=simple
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory={{ docker_compose_file | dirname }}
+ExecStart=/usr/local/bin/docker-compose -f {{ docker_compose_file }} up
+ExecStop=/usr/local/bin/docker-compose -f {{ docker_compose_file }} down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

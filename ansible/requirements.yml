@@ -1,0 +1,18 @@
+---
+roles:
+  - name: geerlingguy.git
+    version: 3.0.1
+  - name: geerlingguy.nginx
+    version: 3.1.4
+  - name: geerlingguy.certbot
+    version: 5.0.2
+  - name: geerlingguy.firewall
+    version: 2.5.1
+  - name: geerlingguy.security
+    version: 2.2.0
+  - name: geerlingguy.pip
+    version: 2.2.0
+  - name: geerlingguy.docker
+    version: 6.1.0
+  - name: geerlingguy.nodejs
+    version: 6.1.1

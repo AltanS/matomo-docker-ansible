@@ -1,0 +1,9 @@
+#run at midnight every sunday
+docker_clean_up_job_schedule:
+  minute: "0"
+  hour: "0"
+  day: "*"
+  month: "*"
+  weekday: "0"
+
+docker_clean_up_job_user: "{{ (docker_users | first) | d('root') }}"

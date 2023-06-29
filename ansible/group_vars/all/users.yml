@@ -1,0 +1,11 @@
+admin_user: ansibleadmin
+
+users:
+  - name: "{{ admin_user }}"
+    groups:
+      - sudo
+      - ansibleadmin
+      - docker
+    keys:
+      - https://github.com/AltanS.keys
+      # - "{{ lookup('file', gh_public_key_path ) }}"
