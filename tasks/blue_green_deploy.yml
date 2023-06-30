@@ -1,0 +1,5 @@
+- name: Blue-green deployment for each app instance
+  include_tasks: tasks/blue_green_single_deploy.yml
+  with_sequence: start=0 end="{{ matomo_container_instances|int - 1 }}"
+  vars:
+    instance_index: "{{ item }}"

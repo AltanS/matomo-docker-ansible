@@ -1,0 +1,22 @@
+- name: Ensure docroot exists.
+  file:
+    path: "{{ nginx_docroot }}"
+    state: directory
+
+- name: Copy SSL configs
+  copy:
+    src: templates/ssl.conf
+    dest: /etc/nginx
+    mode: 0644
+
+- name: Copy Nginx server configuration in place.
+  template:
+    src: templates/server.conf.j2
+    dest: /etc/nginx/sites-enabled/{{matomo_hostname}}.conf
+    mode: 0644
+  notify: restart nginx
+
+- name: Remove default Nginx configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent

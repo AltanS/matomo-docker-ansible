@@ -1,0 +1,28 @@
+- name: Check if Docker Compose is running
+  command: docker compose -f {{ docker_compose_file }} ps matomo_{{ instance_index }}
+  register: compose_ps
+  ignore_errors: true
+  changed_when: false
+
+- name: Set service_status fact
+  set_fact:
+    service_status: "{{ 'running' if 'Up' in compose_ps.stdout else 'not_running' }}"
+
+- name: Announce current service_status
+  debug:
+    msg: "The current service status is: {{ service_status }}"
+
+- name: Pull latest image for matomo
+  command: docker compose -f {{ docker_compose_file }} pull matomo_{{ instance_index }}
+
+- name: Service "not_running", starting stack...
+  command: docker compose -f {{ docker_compose_file }} up -d
+  when: service_status == "not_running"
+
+- name: Stop matomo_{{ instance_index }}
+  command: docker compose -f {{ docker_compose_file }} stop matomo_{{ instance_index }}
+  when: service_status == "running"
+
+- name: Start matomo_{{ instance_index }}
+  command: docker compose -f {{ docker_compose_file }} up --no-deps --no-build -d matomo_{{ instance_index }}
+  when: service_status == "running"

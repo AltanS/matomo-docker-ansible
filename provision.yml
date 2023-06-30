@@ -32,7 +32,5 @@
     - { role: geerlingguy.pip, tags: [docker] }
     - { role: geerlingguy.docker, tags: [docker] }
     - { role: cronjobs, tags: [cronjobs] }
-    - { role: basicauth, tags: [basicauth, nginx-setup] }
     - { role: nginx-setup, tags: [nginx, nginx-setup] }
     - { role: custom-systemd, tags: [systemd] }
-    - { role: deploy-keys, tags: [deploy-keys] }

@@ -1,0 +1,32 @@
+## matomo and docker stack
+matomo_hostname: "{{ lookup('dotenv', 'MATOMO_HOSTNAME') }}"
+matomo_container_instances: 2
+matomo_port: 9000
+mariadb_version: 10.11
+
+# Firewall settings.
+firewall_allowed_tcp_ports:
+  - "22"
+  - "80"
+  - "443"
+
+# firewall_additional_rules:
+#   - "iptables -A INPUT -p tcp --dport 27017 -j DROP"
+firewall_flush_rules_and_chains: false
+
+# Security settings
+security_ssh_port: 22
+security_ssh_permit_root_login: "yes"
+security_ssh_permit_empty_password: "yes"
+
+security_ssh_allowed_groups:
+  - root
+  - sudo
+
+# Let's Encrypt and Certbot
+letsencrypt_email: "{{ lookup('dotenv', 'LETSENCRYPT_ADMIN_EMAIL') }}"
+certbot_create_if_missing: true
+certbot_admin_email: "{{ letsencrypt_email }}"
+certbot_certs:
+  - domains:
+      - "{{ matomo_hostname }}"

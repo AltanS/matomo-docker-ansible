@@ -4,7 +4,7 @@
     name: ssh
     state: restarted
 
-- name: restart ssh daemon
+- name: restart sshd
   service:
     name: sshd
     state: restarted
