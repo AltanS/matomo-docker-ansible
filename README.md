@@ -1,7 +1,5 @@
-# matomo-docker-ansible
-Self-hosted matomo stack utlizing docker
-
-
+# Matomo Docker Ansible
+A self-hosted matomo stack utlizing docker provisioned and maintained with ansible. All of this was tested and built on Ubuntu 22.04 LTS
 
 ## Features
 - Automatic SSL via certbot + letsencrypt
@@ -11,7 +9,7 @@ Self-hosted matomo stack utlizing docker
 - Zero-downtime matomo updates
 
 ## Architecture
-- NGINX Firewall and Proxy server
+- NGINX Firewall and Proxy server that has automatic SSL renewals via CertBot
 - Dockerized NGINX, Matomo, Matomo Sidecar for archiving & MariaDB
 
 ## Installation
