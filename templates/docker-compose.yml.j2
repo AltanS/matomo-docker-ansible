@@ -20,7 +20,11 @@ services:
       - mariadb
     volumes:
       - matomo:/var/www/html
+{% for plugin in MATOMO_PLUGINS.files %}
+      - {{ service_src_folder }}/plugins/{{ plugin.path.split('/')[-1] }}:/var/www/html/plugins/{{ plugin.path.split('/')[-1] }}
 {% endfor %}
+{% endfor %}
+
   nginx:
     image: nginx:alpine
     restart: unless-stopped

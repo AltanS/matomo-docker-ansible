@@ -9,23 +9,6 @@
       register: env_file
       delegate_to: localhost
 
-  vars:
-    # PAYLOAD_SECRET: "{{ lookup('dotenv', 'PAYLOAD_SECRET') if env_file.stat.exists else lookup('env', 'PAYLOAD_SECRET') }}"
-    # DOCKERHUB_REPO_NAME: "{{ lookup('dotenv', 'DOCKERHUB_REPO_NAME') if env_file.stat.exists else lookup('env', 'DOCKERHUB_REPO_NAME') }}"
-    # DOCKERHUB_USER: "{{ lookup('dotenv', 'DOCKERHUB_USER') if env_file.stat.exists else lookup('env', 'DOCKERHUB_USER') }}"
-    # DOCKERHUB_PASSWORD: "{{ lookup('dotenv', 'DOCKERHUB_PASSWORD') if env_file.stat.exists else lookup('env', 'DOCKERHUB_PASSWORD') }}"
-    # S3_BUCKET: "{{ lookup('dotenv', 'S3_BUCKET') if env_file.stat.exists else lookup('env', 'S3_BUCKET') }}"
-    # S3_ENDPOINT: "{{ lookup('dotenv', 'S3_ENDPOINT') if env_file.stat.exists else lookup('env', 'S3_ENDPOINT') }}"
-    # S3_ACCESS_KEY_ID: "{{ lookup('dotenv', 'S3_ACCESS_KEY_ID') if env_file.stat.exists else lookup('env', 'S3_ACCESS_KEY_ID') }}"
-    # S3_SECRET_ACCESS_KEY: "{{ lookup('dotenv', 'S3_SECRET_ACCESS_KEY') if env_file.stat.exists else lookup('env', 'S3_SECRET_ACCESS_KEY') }}"
-    # MONGO_ROOT_USER: "{{ lookup('dotenv', 'MONGO_ROOT_USER') if env_file.stat.exists else lookup('env', 'MONGO_ROOT_USER') }}"
-    # MONGO_ROOT_PASSWORD: "{{ lookup('dotenv', 'MONGO_ROOT_PASSWORD') if env_file.stat.exists else lookup('env', 'MONGO_ROOT_PASSWORD') }}"
-    # MONGO_PAYLOAD_USER: "{{ lookup('dotenv', 'MONGO_PAYLOAD_USER') if env_file.stat.exists else lookup('env', 'MONGO_PAYLOAD_USER') }}"
-    # MONGO_PAYLOAD_PASSWORD: "{{ lookup('dotenv', 'MONGO_PAYLOAD_PASSWORD') if env_file.stat.exists else lookup('env', 'MONGO_PAYLOAD_PASSWORD') }}"
-    # SEED_ADMIN: "{{ seed_admin }}" # defined in group_vars
-    # SEED_ADMIN_EMAIL: "{{ cms_admin_email }}"
-    # SEED_ADMIN_PASSWORD: "{{ cms_admin_password }}"
-
   tasks:
   - name: Ensure destination directory exists
     ansible.builtin.file:
@@ -57,18 +40,43 @@
     become: yes
     become_user: root
 
+  - name: Ensure plugins directory exists
+    ansible.builtin.file:
+      path: "{{ service_src_folder }}/plugins"
+      state: directory
+      mode: 0755
+      owner: ansibleadmin
+      group: docker
+    become: yes
+    become_user: root
+
+  - name: Copy matomo-plugins folder to remote host
+    ansible.builtin.synchronize:
+      src: ./matomo-plugins/
+      dest: "{{ service_src_folder }}/plugins"
+
+  - name: Find the list of plugins in matomo-plugins folder
+    find:
+      paths: "./matomo-plugins"
+      recurse: no
+      file_type: directory
+    register: matomo_plugins
+    delegate_to: localhost
+
   - name: Create docker-compose.yml from template
-    ansible.builtin.template:
+    template:
       src: docker-compose.yml.j2
       dest: "{{ service_src_folder }}/docker-compose.yml"
+    vars:
+      MATOMO_PLUGINS: "{{ matomo_plugins }}"
 
   - name: Create matomo.conf from template
-    ansible.builtin.template:
+    template:
       src: matomo.conf.j2
       dest: "{{ service_src_folder }}/nginx-conf/matomo.conf"
 
   - name: Create db.env from template
-    ansible.builtin.template:
+    template:
       src: db.env.j2
       dest: "{{ service_src_folder }}/db.env"
 
