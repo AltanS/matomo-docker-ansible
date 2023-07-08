@@ -13,15 +13,16 @@
 - Dockerized NGINX, Matomo, Matomo Sidecar for archiving & MariaDB
 
 ## 1. Installation
+I've tested this playbook on a Ubuntu 22.04 VPS. It should work on Debian, but I haven't tried.
 
 ### Prerequisites
-- A GitHub account that exposes your public SSH key for server connection.
+- A GitHub account that exposes your public SSH key for server connection or add a local public key file by adjusting `group_vars/all/users.yml`
 - pipenv installed. [Installation guide](https://pipenv.pypa.io/en/latest/installation/)
 
 ### Setup
 - Clone the repository and navigate to the Ansible folder.
 - Copy the `.env.example` file to `.env` and fill in the necessary variables.
-  - This will define your public SSH keys via Github. Alternatively this can be changed by adjusting `group_vars/all/users.yml` to use a local file instead
+  - This will define your public SSH keys via Github.
 - Copy the `vault_pass.txt.example` to `vault_pass.txt`
 - Set your host IP in `hosts/production`.
 
