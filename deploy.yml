@@ -9,6 +9,9 @@
       register: env_file
       delegate_to: localhost
 
+  vars_files:
+    - ./group_vars/{{ target_host }}/secrets.yml
+
   tasks:
   - name: Ensure destination directory exists
     ansible.builtin.file:
@@ -45,15 +48,25 @@
       path: "{{ service_src_folder }}/plugins"
       state: directory
       mode: 0755
-      owner: ansibleadmin
-      group: docker
+      owner: www-data
+      group: www-data
     become: yes
-    become_user: root
 
   - name: Copy matomo-plugins folder to remote host
     ansible.builtin.synchronize:
       src: ./matomo-plugins/
       dest: "{{ service_src_folder }}/plugins"
+      rsync_opts:
+        - "--no-group"
+    become: yes
+
+  - name: Change ownership of plugins directory
+    ansible.builtin.file:
+      path: "{{ service_src_folder }}/plugins"
+      owner: www-data
+      group: www-data
+      recurse: yes
+    become: yes
 
   - name: Find the list of plugins in matomo-plugins folder
     find:
@@ -80,5 +93,5 @@
       src: db.env.j2
       dest: "{{ service_src_folder }}/db.env"
 
-  - name: Blue-green deployment
+  - name: Blue-green matomo container deployment
     include_tasks: tasks/blue_green_deploy.yml

@@ -24,7 +24,7 @@
   when: service_status == "running"
 
 - name: Start matomo_{{ instance_index }}
-  command: docker compose -f {{ docker_compose_file }} up --no-deps --no-build -d matomo_{{ instance_index }}
+  command: docker compose -f {{ docker_compose_file }} up --no-deps --force-recreate -d matomo_{{ instance_index }}
   when: service_status == "running"
 
 - name: Clear Matomo cache in container
