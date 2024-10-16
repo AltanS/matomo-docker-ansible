@@ -1,0 +1,14 @@
+{
+  "name": "Matomo Workspace",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "customizations": {
+      "vscode": {
+          "extensions": [
+              "dbaeumer.vscode-eslint",
+              "ms-python.python",
+              "ms-python.vscode-pylance"
+          ]
+      }
+  },
+  "postCreateCommand": "bash .devcontainer/install-cli-tools.sh"
+}
