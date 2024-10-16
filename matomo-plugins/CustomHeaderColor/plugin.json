@@ -7,8 +7,5 @@
         "name": "Altan S",
         "homepage": "https://github.com/AltanS"
     }
-  ],
-  "require": {
-      "piwik": ">=3.0.0"
-  }
+  ]
 }

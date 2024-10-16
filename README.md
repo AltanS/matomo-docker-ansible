@@ -7,13 +7,14 @@
 - Matomo
 -   Matomo sidecar container for archiving and other cronjobs
 - Zero-downtime matomo updates
+- Lazydocker for easy container monitoring
 
 ## Architecture
 - NGINX Firewall and Proxy server that has automatic SSL renewals via CertBot
 - Dockerized NGINX, Matomo, Matomo Sidecar for archiving & MariaDB
 
 ## 1. Installation
-I've tested this playbook on a Ubuntu 22.04 VPS. It should work on Debian, but I haven't tried.
+I've tested this playbook on Ubuntu 24.04. It should work on 22.04, but you might come across issues when provisioning the server, refer to [Bugs](#bugs) for more.
 
 ### Prerequisites
 - A GitHub account that exposes your public SSH key for server connection or add a local public key file by adjusting `group_vars/all/users.yml`
@@ -36,10 +37,14 @@ __Setup the python environment via `pipenv`__
 
 __Install ansible requirements__
 
-- `ansible-galaxy install -r requirements.yml`
-
+```bash
+ansible-galaxy install -r requirements.yml
+```
 __Provision the server__
-`ansible-playbook provision.yml -e "target_host=production"`
+
+```bash
+ansible-playbook provision.yml -e "target_host=production"
+```
 
 - This can take a while, but should then finish without errors.
 
@@ -49,13 +54,15 @@ The deployment playbook (deploy.yml) will setup and start docker compose for thi
 __Setting up secrets__
 - You can adjust the passwords in `templates/db.env.j2` directly or make use of encrypted passwords via ansible vaults
 - Make sure you've created a new `vault_pass` file and set a secure password inside it
-- Then run `ansible vault encrypt ./group_vars/production/secrets.yml`. When running `encrypt` ansible will always ask for the vault_pass you've defined in the previous step. For other commands it will use the `vault_pass` file, you can change this in the `ansible.cfg`.
-- If you want to edit it run `ansible vault decrypt FILENAME` or `ansible vault edit FILENAME`, it will read the password now from the
+- Then run `ansible-vault encrypt ./group_vars/production/secrets.yml`. When running `encrypt` ansible will always ask for the vault_pass you've defined in the previous step. For other commands it will use the `vault_pass` file, you can change this in the `ansible.cfg`.
+- If you want to edit it run `ansible-vault decrypt FILENAME` or `ansible-vault edit FILENAME`, it will read the password now from the
 
 ### Running the deployment playbook
 This playbook sets up the docker compose stack in `/opt/matomo-stack`
 
-`ansible-playbook deploy.yml -e "target_host=production"`
+```bash
+ansible-playbook deploy.yml -e "target_host=production"
+```
 
 This will: 
 1. Create a `docker-compose.yml` file on the remote machine to run the stack
@@ -68,7 +75,7 @@ This will:
 
 - [official docker compose reference file](https://github.com/matomo-org/docker/blob/master/.examples/nginx/docker-compose.yml)
 
-## Matomo setup
+## Matomo
 
 - Navigate to the `matomo_hostname` url (set in `.env`)
 - The credentials should be populated from the `group_vars/production/secrets.yml` file
@@ -77,21 +84,22 @@ This will:
 - Updating via the admin UI works.
 - This is dangerous and can cause the app to break, only do this when you know how to resolve issues that can arise.
 
-## Staging environments to try out updates
+### Staging environments to try out updates
 This should be easily doable by adding another `hosts` entry and creating variables for `group_vars/staging`
 - [ ] TODO
 - As the matomo folder (var/www/html) is mounted in a volume that is used across containers (matomo, nginx, matomo-cron), updating only the image won't be enough. the volume would have to be deleted and re-created.
 - The database would also have to be copied as matomo updates oftentimes change the DB permanently
 
 
-## Customize the Matomo Admin UI
+### Customize the Matomo Admin UI
 - If your login page is publicly accessible, make sure to change the layout of the admin URL ASAP. I have had numerous instances now that were flagged by Google as phishing websites, which causes a big headache (can be resolved in the Search Console). 
 - So make sure to customize the logo and favicon in the Matomo admin UI (System -> General Settings -> Branding settings)
-- There is a plugin that can be activated to change color of the header color as well (`matomo-plugins/CustomHeaderColor`)
 
-## Plugins
+
+### Matomo Plugins
 - Add your matomo plugins in the `matomo-plugins` folder. I have added an example plugin in there
 - Once you've added these, re-run the deploy playbook. This will re-create the docker-compose file, which will mount every plugin into the containers running matomo and restart the stack without downtime
+- There is a plugin that can be activated to change color of the header color as well (`matomo-plugins/CustomHeaderColor`)
 
 ## Nginx
 - There are 2 instances of nginx running
@@ -121,6 +129,23 @@ exit
 
 
 ## MariaDB
+- Environment vars are configured in `templates/db.env.j2`
+
+
 - [ ] TODO: setup a backup playbook
 - Currently there is no playbook or task to get a backup of mariadb
 - I'd recommend manually dumping the database, a folder is mounted in the mariadb container so the dumps would be available on the host machine
+
+
+## Lazydocker
+- Lazydocker is installed via ansible and available on the server after provisioning by running `lazydocker`
+
+
+## Bugs
+
+__The configuration file {/var/www/html/config/config.ini.php} has not been found or could not be read__
+- This happens only after the first deployment, open the URL and configure the instance
+
+__error: externally-managed-environment__
+- Refer to this blog post https://www.jeffgeerling.com/blog/2023/how-solve-error-externally-managed-environment-when-installing-pip3
+- If you're running this on Ubuntu 22.04, you might need to change the python version path in `pre_tasks` of `provision.yml`
