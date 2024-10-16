@@ -23,7 +23,7 @@ I've tested this playbook on a Ubuntu 22.04 VPS. It should work on Debian, but I
 - Clone the repository and navigate to the Ansible folder.
 - Copy the `.env.example` file to `.env` and fill in the necessary variables.
   - This will define your public SSH keys via Github.
-- Copy the `vault_pass.txt.example` to `vault_pass.txt`
+- Copy the `vault_pass.example` to `vault_pass`
 - Set your host IP in `hosts/production`.
 
 ## 2. Server provisioning
@@ -49,7 +49,7 @@ The deployment playbook (deploy.yml) will setup and start docker compose for thi
 __Setting up secrets__
 - You can adjust the passwords in `templates/db.env.j2` directly or make use of encrypted passwords via ansible vaults
 - Make sure you've created a new `vault_pass` file and set a secure password inside it
-- Then run `ansible vault encrypt ./group_vars/production/secrets.yml`. When running `encrypt` ansible will always ask for the vault_pass you've defined in the previous step. For other commands it will use the `vault_pass.txt` file, you can change this in the `ansible.cfg`.
+- Then run `ansible vault encrypt ./group_vars/production/secrets.yml`. When running `encrypt` ansible will always ask for the vault_pass you've defined in the previous step. For other commands it will use the `vault_pass` file, you can change this in the `ansible.cfg`.
 - If you want to edit it run `ansible vault decrypt FILENAME` or `ansible vault edit FILENAME`, it will read the password now from the
 
 ### Running the deployment playbook
