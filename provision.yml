@@ -16,6 +16,11 @@
     - set_fact:
         ansible_user: "{{ 'ansibleadmin' if user_exists.rc == 0 else 'root' }}"
 
+    - name: Ignore PEP 668 because it's silly.
+      ansible.builtin.file:
+        path: /usr/lib/python3.12/EXTERNALLY-MANAGED
+        state: absent
+
   vars:
     pip_install_packages:
       - name: docker
@@ -23,7 +28,6 @@
   roles:
     - { role: common, tags: [common] }
     - { role: users, tags: [users] }
-    - { role: geerlingguy.nodejs, tags: [common] }
     - { role: geerlingguy.git }
     - { role: geerlingguy.firewall, tags: [security] }
     - { role: geerlingguy.security, tags: [security] }
@@ -34,3 +38,4 @@
     - { role: cronjobs, tags: [cronjobs] }
     - { role: nginx-setup, tags: [nginx, nginx-setup] }
     - { role: custom-systemd, tags: [systemd] }
+    - { role: darkwizard242.lazydocker, tags: [ common ]}
