@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   mariadb:
     image: mariadb:{{ mariadb_version }}
@@ -18,6 +16,8 @@ services:
     restart: unless-stopped
     depends_on:
       - mariadb
+    env_file:
+      - ./matomo.env
     volumes:
       - matomo:/var/www/html:z
 {% for plugin in MATOMO_PLUGINS.files %}
@@ -38,6 +38,8 @@ services:
 
   matomo-fpm-cron:
     image: matomo:fpm-alpine
+    env_file:
+      - ./matomo.env
     restart: unless-stopped
     entrypoint: "sh -c 'while true; do php console core:archive --url=https://{{ matomo_hostname }}/; sleep 600; done'"
     depends_on:
@@ -46,6 +48,7 @@ services:
     {% endfor -%}
     volumes:
       - matomo:/var/www/html
+
 volumes:
   mariadb:
   matomo:

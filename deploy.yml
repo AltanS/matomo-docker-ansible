@@ -93,5 +93,10 @@
       src: db.env.j2
       dest: "{{ service_src_folder }}/db.env"
 
+  - name: Create matomo.env from template
+    template:
+      src: matomo.env.j2
+      dest: "{{ service_src_folder }}/matomo.env"
+
   - name: Blue-green matomo container deployment
     include_tasks: tasks/blue_green_deploy.yml
