@@ -30,3 +30,9 @@
 - name: Clear Matomo cache in container
   command: docker compose -f {{ docker_compose_file }} exec matomo_{{ instance_index }} ./console cache:clear
   when: service_status == "running"
+
+- name: Change ownership of Matomo files in container
+  command: >
+    docker compose -f {{ docker_compose_file }} exec matomo_{{ instance_index }}
+    chown -R www-data:www-data /var/www/html
+  when: service_status == "running"
