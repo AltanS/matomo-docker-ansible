@@ -101,6 +101,11 @@ This should be easily doable by adding another `hosts` entry and creating variab
 - Once you've added these, re-run the deploy playbook. This will re-create the docker-compose file, which will mount every plugin into the containers running matomo and restart the stack without downtime
 - There is a plugin that can be activated to change color of the header color as well (`matomo-plugins/CustomHeaderColor`)
 
+### Adjusting Matomo Config Settings
+- The `common.config.ini.php.j2` is copied into the matomo docker when running the deployment script
+- This file is loaded *before* the config.ini.php, so changes here might be overwritten.
+-- As the `config.ini.php` file is overwritten by the Matomo Admin UI itself, you would need to find a custom solution on how to handle these cases. I.e. copying the entire config file into templates and modifying from there, then mounting this file into the config folder of the matomo containers
+
 ## Nginx
 - There are 2 instances of nginx running
 
@@ -113,32 +118,43 @@ This should be easily doable by adding another `hosts` entry and creating variab
 - Config file is copied from `templates/matomo.conf`
 - When changes to this file are made:
 1. Re-run the deploy playbook
-2. restart nginx in the container (this will cause a little downtime)
+2. restart the nginx container manually (this will cause a little downtime)
 
 ``` bash
 # on the docker host
 su ansibleadmin
 cd /opt/matomo-stack
 
-docker ps #get the container id of matomo-stack_nginx
-docker exec -it CONTAINER_ID sh
+docker compose exec nginx sh
 # in the container
 nginx -s reload
 exit
 ```
 
+## Logs
+- Log files are stored in `/opt/matomo-stack/logs`
+```
+matomo.error.log -> Error log of the matomo application, log level is set to warn
+matomo.nginx.access.log -> Access log of the dockerized NGINX instance
+matomo.nginx.error.log -> Error log of the dockerized NGINX instance
+access.log -> Access log of the NGINX host instance
+error.log -> Error log of the NGINX host instnace
+```
 
 ## MariaDB
 - Environment vars are configured in `templates/db.env.j2`
 
-
-- [ ] TODO: setup a backup playbook
 - Currently there is no playbook or task to get a backup of mariadb
 - I'd recommend manually dumping the database, a folder is mounted in the mariadb container so the dumps would be available on the host machine
 
 
 ## Lazydocker
 - Lazydocker is installed via ansible and available on the server after provisioning by running `lazydocker`
+
+
+## Todos
+- [ ] setup playbook to backup the DB to a remote location
+- [ ] Log file rotation
 
 
 ## Bugs
