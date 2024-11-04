@@ -98,5 +98,10 @@
       src: matomo.env.j2
       dest: "{{ service_src_folder }}/matomo.env"
 
+  - name: Copy Matomo PHP config file
+    template:
+      src: common.config.ini.php.j2
+      dest: "{{ service_src_folder }}/common.config.ini.php"
+
   - name: Blue-green matomo container deployment
     include_tasks: tasks/blue_green_deploy.yml

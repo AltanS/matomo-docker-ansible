@@ -13,8 +13,8 @@ server {
 	index index.php;
 	try_files $uri $uri/ =404;
 
-  access_log /var/log/nginx/matomo.access.log;
-  error_log /var/log/nginx/matomo.error.log;
+  access_log /var/log/nginx/matomo.nginx.access.log;
+  error_log /var/log/nginx/matomo.nginx.error.log;
 
 	## only allow accessing the following php files
 	location ~ ^/(index|matomo|piwik|js/index|plugins/HeatmapSessionRecording/configs).php {

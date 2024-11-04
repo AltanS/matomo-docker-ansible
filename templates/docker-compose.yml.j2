@@ -20,6 +20,8 @@ services:
       - ./matomo.env
     volumes:
       - matomo:/var/www/html:z
+      - ./common.config.ini.php:/var/www/html/config/common.config.ini.php
+      - ./logs/matomo.error.log:/var/www/html/tmp/logs/matomo.log
 {% for plugin in MATOMO_PLUGINS.files %}
       - {{ service_src_folder }}/plugins/{{ plugin.path.split('/')[-1] }}:/var/www/html/plugins/{{ plugin.path.split('/')[-1] }}
 {% endfor %}
@@ -41,7 +43,7 @@ services:
     env_file:
       - ./matomo.env
     restart: unless-stopped
-    entrypoint: "sh -c 'while true; do php console core:archive --url=https://{{ matomo_hostname }}/; sleep 600; done'"
+    entrypoint: "sh -c 'while true; do php console core:archive --url=https://{{ matomo_hostname }}/; sleep 300; done'"
     depends_on:
     {% for i in range(matomo_container_instances) %}
       - matomo_{{ i }}

@@ -1,0 +1,18 @@
+; <?php exit; ?> DO NOT REMOVE THIS LINE
+;
+; This common.config.ini.php file is read right before config.ini.php
+[General]
+; Always use SSL and redirect http->https in Matomo
+force_ssl = 1
+
+; Do not allow users to trigger the Matomo archiving process.
+; Ensures that no unexpected data processing triggers from UI or API.
+enable_browser_archiving_triggering = 0
+
+[database]
+schema = Mariadb
+[log]
+log_writers[] = file
+;Possible values: ERROR, WARN, INFO, DEBUG, or VERBOSE
+log_level = ERROR
+logger_file_path = tmp/logs/matomo.log
