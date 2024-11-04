@@ -27,6 +27,12 @@ server {
   # include contents of ssl.conf 
   include ssl.conf;
 
+  # Enable gzip compression
+  gzip on;
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_types application/javascript;
 
   location / {
     proxy_pass http://localhost:8080;

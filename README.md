@@ -8,6 +8,7 @@
 -   Matomo sidecar container for archiving and other cronjobs
 - Zero-downtime matomo updates
 - Lazydocker for easy container monitoring
+- GZIP enabled matomo.js file reducing tracker size from 60kb to 20kb
 
 ## Architecture
 - NGINX Firewall and Proxy server that has automatic SSL renewals via CertBot
